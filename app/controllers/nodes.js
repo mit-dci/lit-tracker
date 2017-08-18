@@ -63,13 +63,14 @@ router.post('/announce', function(req, res) {
             litnode.addr = req.body.addr;
             
             litnode.save(function(err) {
-            if(err) {
-                return res.json({success: false,
-                                 message: err
-                                });
-            }
-            
-            res.json({success: true});
+                if(err) {
+                    return res.json({success: false,
+                                     message: err
+                                    });
+                }
+                
+                res.json({success: true});
+            });
         });
     });
 });
