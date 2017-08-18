@@ -1,8 +1,5 @@
 var express = require('express');
-var router = express.Router({mergeParams: true});
-
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var router = express.Router();
 
 var bech32 = require('bech32');
 var btc = require('bitcoinjs-lib');
@@ -12,7 +9,7 @@ var LitNode = require('../models/litnode');
 router.post('/announce', function(req, res) {
     req.checkBody('pbk', 'Public key is required').notEmpty().isAlphanumeric();
     req.checkBody('addr', 'Lit address is required').notEmpty().isAlphanumeric();
-    req.checkBody('url', 'url is required').notEmpty().isAlphanumeric();
+    req.checkBody('url', 'url is required').notEmpty();
     req.checkBody('sig', 'Signature is required').notEmpty();
     
     req.getValidationResult().then(function(errors) {
@@ -30,16 +27,18 @@ router.post('/announce', function(req, res) {
         
         // Check public key with lit address
         try {
-            pkh = bech32.decode(res.body.addr);
+            pkh = bech32.decode(req.body.addr);
         } catch(err) {
             return res.json({success: false,
-                             message: err
+                             message: err.message
                             });
         }
         
         // Check PKH == SHA256(PK)
         var pbk = Buffer.from(req.body.pbk, 'hex');
-        if(btc.crypto.sha256(pbk) != bech32.fromWords(pkh.words)) {
+        if(Array.prototype.slice.call(btc.crypto.sha256(pbk), 0)
+                                .slice(0, 20).toString() != 
+           bech32.fromWords(pkh.words).toString()) {
             return res.json({success: false,
                              message: 'Public key incorrect'
                             });
@@ -47,8 +46,8 @@ router.post('/announce', function(req, res) {
 
         // Check ecdsa(url, sig, pkey)
         var keyPair = btc.ECPair.fromPublicKeyBuffer(pbk);
-        var sig = Buffer.from(req.body.sig, 'hex');
-        if(!keypair.verify(btc.crypto.sha256(req.body.url), sig)) {
+        var sig = btc.ECSignature.fromDER(Buffer.from(req.body.sig, 'hex'));
+        if(!keyPair.verify(btc.crypto.sha256(req.body.url), sig)) {
             return res.json({success: false,
                              message: 'Signature incorrect'
                             });
@@ -56,6 +55,12 @@ router.post('/announce', function(req, res) {
         
         LitNode.findOne({ addr: req.body.addr }, function(err, litnode) {
             if(err) {
+                return res.json({success: false,
+                                 message: err
+                                });
+            }
+            
+            if(!litnode) {
                 litnode = new LitNode();
             }
             
@@ -84,7 +89,10 @@ router.get('/:node_id', function(req, res) {
         }
         
         return res.json({success: true,
-                         node: litnode
+                         node: {
+                             addr: litnode.addr,
+                             url: litnode.url
+                         }
                         });
     });
 });
