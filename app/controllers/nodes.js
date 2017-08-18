@@ -72,7 +72,7 @@ router.post('/announce', function(req, res) {
 });
 
 router.get('/:node_id', function(req, res) {
-    LitNode.findById(req.params.node_id, function(err, litnode) {
+    LitNode.findOne({ addr: req.params.node_id }, function(err, litnode) {
         if(err) {
             return res.json({success: false,
                              message: err
