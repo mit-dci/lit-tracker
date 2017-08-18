@@ -1,0 +1,14 @@
+{
+    "name": "lit-tracker",
+    "main": "server.js",
+    "dependencies": {
+        "express": "latest",
+        "express-validator": "latest",
+        "mongoose": "latest",
+        "body-parser": "latest",
+        "method-override": "latest",
+        "morgan": "latest",
+        "bech32": "latest",
+        "bitcoinjs-lib": "latest"
+    }
+}
