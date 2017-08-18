@@ -88,6 +88,12 @@ router.get('/:node_id', function(req, res) {
                             });
         }
         
+        if(!litnode) {
+            return res.json({success: false,
+                             message: 'Node not found'
+                            });
+        }
+        
         return res.json({success: true,
                          node: {
                              addr: litnode.addr,
