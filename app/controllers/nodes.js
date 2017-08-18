@@ -39,7 +39,7 @@ router.post('/announce', function(req, res) {
         
         // Check PKH == SHA256(PK)
         var pbk = Buffer.from(req.body.pbk, 'hex');
-        if(btc.crypto.sha256(pbk) != pkh) {
+        if(btc.crypto.sha256(pbk) != bech32.fromWords(pkh.words)) {
             return res.json({success: false,
                              message: 'Public key incorrect'
                             });
