@@ -54,12 +54,15 @@ router.post('/announce', function(req, res) {
                             });
         }
         
-        // Commit node
-        var litnode = new LitNode();
-        litnode.url = req.body.url;
-        litnode.addr = req.body.addr;
-        
-        litnode.save(function(err) {
+        LitNode.findOne({ addr: req.body.addr }, function(err, litnode) {
+            if(err) {
+                litnode = new LitNode();
+            }
+            
+            litnode.url = req.body.url;
+            litnode.addr = req.body.addr;
+            
+            litnode.save(function(err) {
             if(err) {
                 return res.json({success: false,
                                  message: err
