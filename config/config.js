@@ -1,3 +1,3 @@
 module.exports = {
-    database : 'mongodb://localhost/lit-tracker',
+    database : 'mongodb://' + (process.env.DB_HOST || 'localhost') + '/' + (process.env.DB_NAME || 'lit-tracker'),
 };
