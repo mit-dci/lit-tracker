@@ -1,0 +1,16 @@
+version: "2"
+
+services:
+  db:
+    image: mongo
+    restart: always
+
+  tracker:
+    image: lit-tracker
+    restart: always
+    environment:
+      DB_HOST: "db"
+    ports:
+      - "46580:46580"
+    depends_on:
+      - "db"

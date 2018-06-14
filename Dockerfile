@@ -18,4 +18,4 @@ COPY --from=dependencies /app/prod_node_modules ./node_modules
 COPY . .
 # expose port and define CMD
 EXPOSE 46580
-CMD node server.js
+CMD sleep 5 && node server.js

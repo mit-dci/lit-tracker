@@ -7,8 +7,11 @@ module.exports = mongoose.model('litnode', new Schema({
         required: true,
         unique: true
     },
-    url: {
+    ipv4: {
         type: String,
         required: true
+    },
+    ipv6: {
+        type: String
     }
 }));
